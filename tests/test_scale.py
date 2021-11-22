@@ -1,8 +1,11 @@
+#!/usr/bin/env python
+""" Unit tests for the scale function. """
 import unittest
 
 from fractal import scale
 
 class TestScale(unittest.TestCase):
+    """ Test class for the scale function. """
     minx = 0
     maxx = 1024
     minscalex = -2

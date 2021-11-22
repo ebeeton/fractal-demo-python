@@ -36,20 +36,23 @@ class Mandelbrot():
         # "Probably" in the set.
         return 0
 
+    def plot_line(self, line):
+        # Imaginary part is the current line (Y coordinate) scaled to the
+        # Mandelbrot set range.
+        imag = scale(line, 0, self.lines, self.miny, self.maxy)
+        for pix in range(0, self.bytes_per_line, self.bytes_per_pixel):
+            # Real part is scaled as above, but for X coordinates.
+            real = scale(pix, 0, self.bytes_per_line, self.minx, self.maxx)
+            val = self.get_pixel(complex(real, imag))
+            #self.img[line * self.bytes_per_line + pix] = 255
+            index = line * self.bytes_per_line + pix
+            self.img[index] = val
+            self.img[index + 1] = val
+            self.img[index + 2] = val
+
     def plot(self):
         """ Plots the Mandelbrot set. """
         for line in range(0, self.lines):
-            # Imaginary part is the current line (Y coordinate) scaled to the
-            # Mandelbrot set range.
-            imag = scale(line, 0, self.lines, self.miny, self.maxy)
-            for pix in range(0, self.bytes_per_line, self.bytes_per_pixel):
-                # Real part is scaled as above, but for X coordinates.
-                real = scale(pix, 0, self.bytes_per_line, self.minx, self.maxx)
-                val = self.get_pixel(complex(real, imag))
-                #self.img[line * self.bytes_per_line + pix] = 255
-                index = line * self.bytes_per_line + pix
-                self.img[index] = val
-                self.img[index + 1] = val
-                self.img[index + 2] = val
+            self.plot_line(line)
 
         return bytes(self.img)

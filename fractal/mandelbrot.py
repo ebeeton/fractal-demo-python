@@ -37,6 +37,7 @@ class Mandelbrot():
         return 0
 
     def plot_line(self, line):
+        """ Plots a single line of the Mandelbrot set. """
         # Imaginary part is the current line (Y coordinate) scaled to the
         # Mandelbrot set range.
         imag = scale(line, 0, self.lines, self.miny, self.maxy)

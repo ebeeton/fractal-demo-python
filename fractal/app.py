@@ -5,7 +5,9 @@ import logging
 import time
 from flask import Flask, Response
 from PIL import Image
-from mandelbrot import Mandelbrot
+from image import ImageRGB24
+import mandelbrot
+from parameters import FractalParameters
 
 app = Flask(__name__)
 
@@ -34,18 +36,19 @@ def test_image():
 def draw_mandelbrot():
     """ Draws the Mandelbrot set. """
     start = time.time()
-    size = (800, 800)
-    max_iter = 1000
 
-    plotter = Mandelbrot(size, max_iter)
-    buf = plotter.plot()
+    size = (800, 800)
+    img = ImageRGB24(size)
+    params = FractalParameters()
+    mandelbrot.plot(img, params)
 
     # https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.frombuffer
     mode = 'RGB'
-    img = Image.frombuffer(mode, size, bytes(buf), 'raw', mode, 0, 1)
+    img = Image.frombuffer(mode, size, bytes(img.data), 'raw', mode, 0, 1)
     img_bytes = BytesIO()
     img.save(img_bytes, 'PNG')
     img_bytes.seek(0)
+
     end = time.time()
     app.logger.info("Render took %.2f sec.", end - start)
     return Response(img_bytes, mimetype='image/png')

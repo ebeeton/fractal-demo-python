@@ -9,10 +9,12 @@ import mandelbrot
 
 logger = logging.getLogger()
 
-def init_process(data):
+def init_process(data,img,params):
     mandelbrot.data = data
+    mandelbrot.img = img
+    mandelbrot.params = params
 
-def _get_pixel(params : FractalParameters, c : complex) -> int:
+def _get_pixel(c : complex) -> int:
     """ Given a pixel as a point on the complex plane, returns 0 if the pixel
     is (probably) in the Mandelbrot set, or the number of iterations performed
     before escaping.
@@ -30,7 +32,7 @@ def _get_pixel(params : FractalParameters, c : complex) -> int:
     # "Probably" in the set.
     return 0
 
-def _plot_line(img : ImageRGB24, params : FractalParameters, line : int):
+def _plot_line(line : int):
     """ Plots a single line of the Mandelbrot set. """
     # Imaginary part is the current line (Y coordinate) scaled to the
     # Mandelbrot set range.
@@ -38,7 +40,7 @@ def _plot_line(img : ImageRGB24, params : FractalParameters, line : int):
     for pix in range(0, img.bytes_per_line, img.bytes_per_pixel):
         # Real part is scaled as above, but for X coordinates.
         real = scale(pix, 0, img.bytes_per_line, params.minx, params.maxx)
-        iterations = _get_pixel(params, complex(real, imag))
+        iterations = _get_pixel(complex(real, imag))
         if iterations == 0:
             # Leave points in the set black.
             continue
@@ -52,13 +54,8 @@ def _plot_line(img : ImageRGB24, params : FractalParameters, line : int):
 
 def plot(img : ImageRGB24, params : FractalParameters):
     """ Plots the Mandelbrot set. """
+    # https://stackoverflow.com/a/1721911
     data = mp.Array('B', img.lines * img.bytes_per_line)
-    with concurrent.futures.ProcessPoolExecutor(initializer=init_process,
-                                                initargs=(data,)) as executor:
-        futures = [executor.submit(_plot_line, img, params, line) for line in range(0, img.lines)]
-        for future in concurrent.futures.as_completed(futures):
-            try:
-                future.result()
-            except Exception as ex:
-                logger.error(ex)
+    with mp.Pool(initializer=init_process, initargs=(data,img,params,)) as pool:
+        pool.map(_plot_line, range(0, img.lines))
     img.data = data

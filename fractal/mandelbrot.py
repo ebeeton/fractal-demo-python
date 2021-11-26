@@ -1,7 +1,16 @@
 """ Plots the Mandelbrot set to an RGB image. """
+import concurrent.futures
+import logging
+import multiprocessing as mp
 from scale import scale
 from image import ImageRGB24
 from parameters import FractalParameters
+import mandelbrot
+
+logger = logging.getLogger()
+
+def init_process(data):
+    mandelbrot.data = data
 
 def _get_pixel(params : FractalParameters, c : complex) -> int:
     """ Given a pixel as a point on the complex plane, returns 0 if the pixel
@@ -37,11 +46,19 @@ def _plot_line(img : ImageRGB24, params : FractalParameters, line : int):
         # Simple grayscale coloring.
         val = int(iterations / params.max_iter * 255)
         index = line * img.bytes_per_line + pix
-        img.data[index] = val
-        img.data[index + 1] = val
-        img.data[index + 2] = val
+        data[index] = val
+        data[index + 1] = val
+        data[index + 2] = val
 
 def plot(img : ImageRGB24, params : FractalParameters):
     """ Plots the Mandelbrot set. """
-    for line in range(0, img.lines):
-        _plot_line(img, params, line)
+    data = mp.Array('B', img.lines * img.bytes_per_line)
+    with concurrent.futures.ProcessPoolExecutor(initializer=init_process,
+                                                initargs=(data,)) as executor:
+        futures = [executor.submit(_plot_line, img, params, line) for line in range(0, img.lines)]
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                future.result()
+            except Exception as ex:
+                logger.error(ex)
+    img.data = data

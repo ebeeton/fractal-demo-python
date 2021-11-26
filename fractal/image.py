@@ -1,4 +1,5 @@
 """ Image data class. """
+import multiprocessing as mp
 from dataclasses import dataclass
 
 @dataclass
@@ -12,4 +13,3 @@ class ImageRGB24:
     def __init__(self, size: tuple[int, int]):
         self.lines = size[1]
         self.bytes_per_line = size[0] * self.bytes_per_pixel
-        self.data = bytearray(self.lines * self.bytes_per_line)

@@ -1,5 +1,4 @@
 """ Image data class. """
-import multiprocessing as mp
 from dataclasses import dataclass
 
 @dataclass

@@ -1,5 +1,4 @@
 """ Plots the Mandelbrot set to an RGB image. """
-import concurrent.futures
 import logging
 import multiprocessing as mp
 from scale import scale
@@ -10,6 +9,7 @@ import mandelbrot
 logger = logging.getLogger()
 
 def init_process(data,img,params):
+    """ Initialize the worker process' parameters. """
     mandelbrot.data = data
     mandelbrot.img = img
     mandelbrot.params = params

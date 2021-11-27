@@ -3,43 +3,38 @@
 from io import BytesIO
 import logging
 import time
-from flask import Flask, Response
+from flask import Flask, Response, render_template
 from PIL import Image
+from config import Config
+from fractal_form import FractalForm
 from image import ImageRGB24
 import mandelbrot
 from parameters import FractalParameters
 
 app = Flask(__name__)
+app.config.from_object(Config)
 
 @app.route('/')
 def index():
     """ Default route. """
-    return '<p>Hello, world!</p>'
+    form = FractalForm()
+    return render_template('index.html', form=form)
 
-@app.route('/image')
-def test_image():
-    """ Draws a test image. """
-    size = (320, 240)
-    buf = bytearray(size[0] * size[1] * 3)
-    for i in range(0, len(buf), 3):
-        buf[i] = 255
+@app.route('/mandelbrot/', methods=['POST'])
+def plot_mandelbrot():
+    """ Plots the Mandelbrot set. """
+    form = FractalForm()
+    if not form.validate_on_submit():
+        return render_template('index.html', form=form)
 
-    # https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.frombuffer
-    mode = 'RGB'
-    img = Image.frombuffer(mode, size, bytes(buf), 'raw', mode, 0, 1)
-    img_bytes = BytesIO()
-    img.save(img_bytes, 'PNG')
-    img_bytes.seek(0)
-    return Response(img_bytes, mimetype='image/png')
+    params = FractalParameters(max_iter=form.max_iter.data)
+    size = (form.width.data, form.height.data)
+    img = ImageRGB24(size)
 
-@app.route('/mandelbrot')
-def draw_mandelbrot():
-    """ Draws the Mandelbrot set. """
+    logging.info(params)
     start = time.time()
 
-    size = (800, 800)
-    img = ImageRGB24(size)
-    params = FractalParameters()
+    # Plot the set.
     mandelbrot.plot(img, params)
 
     # https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.frombuffer

@@ -1,0 +1,22 @@
+<!doctype html>
+<title>Multiprocess Mandelbrot plotting in Python 3 by Evan Beeton</title>
+<h2>Multiprocess Mandelbrot plotting in Python 3 by Evan Beeton</h2>
+    <form action="mandelbrot" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.width.label }}
+            {{ form.width }}
+        </p>
+        <p>
+            {{ form.height.label }}
+            {{ form.height }}
+        </p>
+        <p>
+            {{ form.max_iter.label }}
+            {{ form.max_iter }}
+        </p>
+        <p>
+            {{ form.submit() }}
+        </p>
+    </form>
+

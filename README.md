@@ -1,2 +1,2 @@
 # fractal-demo-python
-Fractal generation demo by Evan Beeton
+A simple Mandelbrot set plotter written with Python 3.9 and multiprocessing. This "spare time" project is intended to (hopefully) demonstrate basic competency with Python, Flask, and Docker.

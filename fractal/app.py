@@ -14,11 +14,13 @@ from parameters import FractalParameters
 app = Flask(__name__)
 app.config.from_object(Config)
 
+
 @app.route('/')
 def index():
     """ Default route. """
     form = FractalForm()
     return render_template('index.html', form=form)
+
 
 @app.route('/mandelbrot/', methods=['POST'])
 def plot_mandelbrot():
@@ -48,6 +50,7 @@ def plot_mandelbrot():
     app.logger.info("Render took %.2f sec.", end - start)
     return Response(img_bytes, mimetype='image/png')
 
+
 if __name__ == '__main__':
-    logging.basicConfig(level = logging.INFO)
+    logging.basicConfig(level=logging.INFO)
     app.run(debug=False, host='0.0.0.0')

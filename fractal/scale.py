@@ -1,5 +1,6 @@
 """ Scaling functions. """
 
+
 def scale(val, minx, maxx, minscale, maxscale):
     """ Scales a value in one range to another. """
 

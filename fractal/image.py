@@ -1,6 +1,7 @@
 """ Image data class. """
 from dataclasses import dataclass
 
+
 @dataclass
 class ImageRGB24:
     """ A 24-bit per pixel RGB image. """

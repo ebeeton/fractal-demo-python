@@ -2,6 +2,8 @@
 
 [![Python application](https://github.com/ebeeton/fractal-demo-python/actions/workflows/python-app.yml/badge.svg)](https://github.com/ebeeton/fractal-demo-python/actions/workflows/python-app.yml)
 
+[![Docker Image CI](https://github.com/ebeeton/fractal-demo-python/actions/workflows/docker-image.yml/badge.svg)](https://github.com/ebeeton/fractal-demo-python/actions/workflows/docker-image.yml)
+
 A simple Mandelbrot set plotter written with Python 3.9 and multiprocessing.
 This spare time project is intended to (hopefully) demonstrate basic
 competency with Python, Flask, and Docker.
